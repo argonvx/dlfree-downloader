@@ -5,7 +5,7 @@ require 'vendor/autoload.php';
 use GuzzleHttp\Client;
 
 function get_file_id($url) {
-    if(preg_match('/^http:\/\/dl\.free\.fr\/(?:getfile\.pl\?file=\/(.+)|[\w]{1}(.+))/', $url, $match)) {
+    if(preg_match('/^http:\/\/dl\.free\.fr\/(?:getfile\.pl\?file=\/(.+)|[\w]{1}(.+))$/', $url, $match)) {
         return $match[1]?: $match[2];
     } else {
         throw new Exception('Not dl.free.fr valid url');

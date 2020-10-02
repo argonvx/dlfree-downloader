@@ -7,4 +7,4 @@ Make sure your environment have composer installed.
 2. Install all dependency with `composer install`
 
 # Usage
-`php dlfree.php <url>`
+`php dlfree.php <url> [proxy]`

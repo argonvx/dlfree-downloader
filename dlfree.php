@@ -8,15 +8,18 @@ if ($argc <= 1) {
     throw new InvalidArgumentException('You must specific at least one url');
 }
 
+$url = $argv[1];
+$proxy = $argv[2];
+$file_id = get_file_id($url);
+
 $cookiejar = new GuzzleHttp\Cookie\CookieJar;
 $http = new Client([
     'base_uri' => 'http://dl.free.fr/',
     'timeout'  => 15,
+    'connect_timeout' => 15,
     'cookies'  => $cookiejar,
+    'proxy' => $proxy?: ""
 ]);
-
-$url = $argv[1];
-$file_id = get_file_id($url);
 
 try {
     $request_cookies = $http->post('getfile.pl', [
@@ -57,11 +60,20 @@ try {
     }
 } catch (\GuzzleHttp\Exception\ClientException $e) {
     $code = $e->getResponse()->getStatusCode();
-    echo "\e[31m[ERROR] Got status code: " . $code . PHP_EOL;
+    $msg  = $e->getResponse()->getReasonPhrase();
+    echo sprintf("\e[31m[ERROR] Got status code: %d %s\n", $code, $msg);
     switch ($code) {
         case 404:
             echo "Opss, its look like your file trying download is not available.\n";
         break;
+        default:
+            echo $e->getMessage() . PHP_EOL;
+        break;
     }
+    echo "\e[0m";
+} catch (\GuzzleHttp\Exception\ConnectException $e) {
+    echo "\e[31m[ERROR] Connection error\n";
+    echo $e->getMessage() . PHP_EOL;
+    echo 'If you are using a proxy, make sure your proxy configured properly' . PHP_EOL;
     echo "\e[0m";
 }

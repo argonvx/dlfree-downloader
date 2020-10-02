@@ -10,7 +10,6 @@ if ($argc <= 1) {
 
 $url = $argv[1];
 $proxy = $argv[2] ?? "";
-
 $file_id = get_file_id($url);
 
 $cookiejar = new GuzzleHttp\Cookie\CookieJar;

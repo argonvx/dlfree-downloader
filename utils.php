@@ -25,3 +25,13 @@ function get_file_id($url) {
         throw new Exception('Not dl.free.fr valid url');
     }
 }
+
+function calc_speed($start, $end, $bytes) {
+    $dif = $end - $start;
+    
+    if ($bytes == 0 || $dif < 0.001) {
+        return null;
+    }
+
+    return $bytes / $dif;
+}

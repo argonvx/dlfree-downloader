@@ -9,7 +9,8 @@ if ($argc <= 1) {
 }
 
 $url = $argv[1];
-$proxy = $argv[2];
+$proxy = $argv[2] ?? "";
+
 $file_id = get_file_id($url);
 
 $cookiejar = new GuzzleHttp\Cookie\CookieJar;
@@ -18,7 +19,7 @@ $http = new Client([
     'timeout'  => 15,
     'connect_timeout' => 15,
     'cookies'  => $cookiejar,
-    'proxy' => $proxy?: ""
+    'proxy' => $proxy
 ]);
 
 try {
@@ -45,17 +46,21 @@ try {
     echo sprintf('[%s] Downloading %s', $file_id, $filename . PHP_EOL);
     $output_file = fopen(__DIR__ . '/' . $filename, 'wb');
 
+    $start = microtime(true);
     $recv_size = 0;
     while($filebody->eof() !== true) {
         $chunk = $filebody->read(1024 * 1e+6); // Equalivent to 1MB
         $recv_size += strlen($chunk);
+        $end = microtime(true);
         fwrite($output_file, $chunk);
 
+        $downSpeed = calc_speed($start, $end, $recv_size);
         echo sprintf(
-            "\e[K\r%10s of %s (%d%%)",
+            "\e[K\r%10s of %s (%d%%) at %s/s",
             format_filesize($recv_size),
             format_filesize($filesize),
-            format_filesize($recv_size / $filesize * 100)
+            format_filesize($recv_size / $filesize * 100),
+            format_filesize($downSpeed)
         );
     }
 } catch (\GuzzleHttp\Exception\ClientException $e) {

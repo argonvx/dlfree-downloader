@@ -1,5 +1,8 @@
 {
     "require": {
         "guzzlehttp/guzzle": "^7.1"
+    },
+    "autoload": {
+        "files": ["utils.php"]
     }
 }
